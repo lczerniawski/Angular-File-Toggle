@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const toggleCss = vscode.commands.registerCommand('angular-file-toggle.toggleCss', () => {
-		toggleFile('scss');
+		toggleCssFile();
 	});
 
 	context.subscriptions.push(toggleTs, toggleHtml, toggleCss);
@@ -26,12 +26,40 @@ function toggleFile(targetExtension: string) {
 	}
 
 	const currentFile = editor.document.fileName;
-	// TODO make scss selectable from config or search for all the extensions possible
-	const newFileToOpen = currentFile.replace(/\.(ts|html|scss)$/, `.${targetExtension}`);
+	const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${targetExtension}`);
 	vscode.workspace.openTextDocument(newFileToOpen).then(doc => {
-		vscode.window.showTextDocument(doc);
+		vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
 	}, () => {
-		// TODO add better error message
 		vscode.window.showErrorMessage(`File ${newFileToOpen} does not exists.`);
 	});
+};
+
+
+async function toggleCssFile() {
+	const editor = vscode.window.activeTextEditor;
+	if(!editor) {
+		return;
+	}
+	
+	let isFileFound = false;
+	const possibleExtensions = ['scss', 'sass', 'less', 'css', 'styl'];
+
+	for(const extension of possibleExtensions) {
+		const currentFile = editor.document.fileName;
+		const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${extension}`);
+
+		try {
+			await vscode.workspace.fs.stat(vscode.Uri.file(newFileToOpen));
+            const doc = await vscode.workspace.openTextDocument(newFileToOpen);
+            await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+            isFileFound = true;
+            break;
+			
+		} catch{}
+	}
+
+	if(!isFileFound)
+	{
+		vscode.window.showErrorMessage(`None of the CSS files with extensions ${possibleExtensions.join(', ')} exist for selected component.`);	
+	}
 };
