@@ -1,26 +1,37 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "angular-file-toggle" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('angular-file-toggle.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Angular File Toggle!');
+	// TODO Have shortcuts configurable
+	const toggleTs = vscode.commands.registerCommand('angular-file-toggle.toggleTs', () => {
+		toggleFile('ts');
 	});
 
-	context.subscriptions.push(disposable);
+	const toggleHtml = vscode.commands.registerCommand('angular-file-toggle.toggleHtml', () => {
+		toggleFile('html');
+	});
+
+	const toggleCss = vscode.commands.registerCommand('angular-file-toggle.toggleCss', () => {
+		toggleFile('scss');
+	});
+
+	context.subscriptions.push(toggleTs, toggleHtml, toggleCss);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
+
+function toggleFile(targetExtension: string) {
+	const editor = vscode.window.activeTextEditor;
+	if(!editor) {
+		return;
+	}
+
+	const currentFile = editor.document.fileName;
+	// TODO make scss selectable from config or search for all the extensions possible
+	const newFileToOpen = currentFile.replace(/\.(ts|html|scss)$/, `.${targetExtension}`);
+	vscode.workspace.openTextDocument(newFileToOpen).then(doc => {
+		vscode.window.showTextDocument(doc);
+	}, () => {
+		// TODO add better error message
+		vscode.window.showErrorMessage(`File ${newFileToOpen} does not exists.`);
+	});
+};
