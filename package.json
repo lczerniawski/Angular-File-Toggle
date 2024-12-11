@@ -18,15 +18,15 @@
     "commands": [
       {
         "command": "angular-file-toggle.toggleTs",
-        "title": "Toggle to TypeScript File"
+        "title": "Angular File Toggle: Toggle to TypeScript File"
       },
       {
         "command": "angular-file-toggle.toggleHtml",
-        "title": "Toggle to HTML File"
+        "title": "Angular File Toggle: Toggle to HTML File"
       },
       {
         "command": "angular-file-toggle.toggleCss",
-        "title": "Toggle to CSS File"
+        "title": "Angular File Toggle: Toggle to CSS File"
       }
     ],
     "keybindings": [
