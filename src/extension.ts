@@ -1,16 +1,18 @@
 import * as vscode from 'vscode';
 
+const possibleCssExtensions = ['scss', 'sass', 'less', 'css', 'styl'];
+
 export function activate(context: vscode.ExtensionContext) {
-	const toggleTs = vscode.commands.registerCommand('angular-file-toggle.toggleTs', () => {
-		toggleFile('ts');
+	const toggleTs = vscode.commands.registerCommand('angular-file-toggle.toggleTs', async () => {
+		await toggleFile('ts');
 	});
 
-	const toggleHtml = vscode.commands.registerCommand('angular-file-toggle.toggleHtml', () => {
-		toggleFile('html');
+	const toggleHtml = vscode.commands.registerCommand('angular-file-toggle.toggleHtml', async () => {
+		await toggleFile('html');
 	});
 
-	const toggleCss = vscode.commands.registerCommand('angular-file-toggle.toggleCss', () => {
-		toggleCssFile();
+	const toggleCss = vscode.commands.registerCommand('angular-file-toggle.toggleCss', async () => {
+		await toggleCssFile();
 	});
 
 	context.subscriptions.push(toggleTs, toggleHtml, toggleCss);
@@ -18,74 +20,95 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-function toggleFile(targetExtension: string) {
-	const editor = vscode.window.activeTextEditor;
+async function toggleFile(targetExtension: string) {
+	const editor = getCurrentEditor();
 	if(!editor) {
 		return;
 	}
 
-	const currentFile = editor.document.fileName;
-	const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${targetExtension}`);
-
-	if(currentFile === newFileToOpen) {
+	const newFileToOpen = getNewFileToOpen(editor, targetExtension);
+	if(!newFileToOpen) {
 		return;
 	}
 
-	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
-	const existingTabInActiveGroup = activeTabGroup.tabs.find(x => (x.input as vscode.TabInputText).uri.path === newFileToOpen);
-	if(existingTabInActiveGroup) {
-		const tabInput = existingTabInActiveGroup.input as vscode.TabInputText;
-		vscode.window.showTextDocument(tabInput.uri);
+	if(showFileIfAlreadyOpened(newFileToOpen)) {
 		return;
 	}
 
-	vscode.workspace.openTextDocument(newFileToOpen).then(doc => {
-		const column = editor.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
-		vscode.window.showTextDocument(doc, column);
-	}, () => {
+	try {
+		await openFileInSplitScreen(editor, newFileToOpen);
+	} catch {
 		vscode.window.showErrorMessage(`File ${newFileToOpen} does not exists.`);
-	});
+	}
 };
 
 
 async function toggleCssFile() {
-	const editor = vscode.window.activeTextEditor;
+	const editor = getCurrentEditor();
 	if(!editor) {
 		return;
 	}
-	
+
 	let isFileFound = false;
-	const possibleExtensions = ['scss', 'sass', 'less', 'css', 'styl'];
-
-	for(const extension of possibleExtensions) {
-		const currentFile = editor.document.fileName;
-		const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${extension}`);
-
-		if(currentFile === newFileToOpen) {
+	for(const extension of possibleCssExtensions) {
+		const newFileToOpen = getNewFileToOpen(editor, extension);
+		if(!newFileToOpen) {
 			return;
 		}
 
-		const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
-		const existingTabInActiveGroup = activeTabGroup.tabs.find(x => (x.input as vscode.TabInputText).uri.path === newFileToOpen);
-		if(existingTabInActiveGroup) {
-			const tabInput = existingTabInActiveGroup.input as vscode.TabInputText;
-			vscode.window.showTextDocument(tabInput.uri);
+		if(showFileIfAlreadyOpened(newFileToOpen))
+		{
 			return;
-		}
+		}	
 
 		try {
-			await vscode.workspace.fs.stat(vscode.Uri.file(newFileToOpen));
-            const doc = await vscode.workspace.openTextDocument(newFileToOpen);
-			const column = editor.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
-            await vscode.window.showTextDocument(doc, column);
+			await openFileInSplitScreen(editor, newFileToOpen);
             isFileFound = true;
             break;
-			
 		} catch{}
 	}
 
 	if(!isFileFound)
 	{
-		vscode.window.showErrorMessage(`None of the CSS files with extensions ${possibleExtensions.join(', ')} exist for selected component.`);	
+		vscode.window.showErrorMessage(`None of the CSS files with extensions ${possibleCssExtensions.join(', ')} exist for selected component.`);	
 	}
 };
+
+function getCurrentEditor(): vscode.TextEditor | null {
+	const editor = vscode.window.activeTextEditor;
+	if(!editor) {
+		return null;
+	}
+
+	return editor;
+}
+
+function getNewFileToOpen(editor: vscode.TextEditor, targetExtension: string): string | null {
+	const currentFile = editor.document.fileName;
+	const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${targetExtension}`);
+
+	if(currentFile === newFileToOpen) {
+		return null;
+	}
+
+	return newFileToOpen;
+}
+
+function showFileIfAlreadyOpened(newFileToOpen: string): boolean {
+	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+	const existingTabInActiveGroup = activeTabGroup.tabs.find(x => (x.input as vscode.TabInputText).uri.path === newFileToOpen);
+
+	if(existingTabInActiveGroup) {
+		const tabInput = existingTabInActiveGroup.input as vscode.TabInputText;
+		vscode.window.showTextDocument(tabInput.uri);
+		return true;
+	}
+
+	return false;
+}
+
+async function openFileInSplitScreen(editor: vscode.TextEditor, newFileToOpen: string) {
+	const doc = await vscode.workspace.openTextDocument(newFileToOpen);
+	const column = editor.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
+	await vscode.window.showTextDocument(doc, column);
+}
