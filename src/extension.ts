@@ -26,8 +26,22 @@ function toggleFile(targetExtension: string) {
 
 	const currentFile = editor.document.fileName;
 	const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${targetExtension}`);
+
+	if(currentFile === newFileToOpen) {
+		return;
+	}
+
+	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+	const existingTabInActiveGroup = activeTabGroup.tabs.find(x => (x.input as vscode.TabInputText).uri.path === newFileToOpen);
+	if(existingTabInActiveGroup) {
+		const tabInput = existingTabInActiveGroup.input as vscode.TabInputText;
+		vscode.window.showTextDocument(tabInput.uri);
+		return;
+	}
+
 	vscode.workspace.openTextDocument(newFileToOpen).then(doc => {
-		vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+		const column = editor.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
+		vscode.window.showTextDocument(doc, column);
 	}, () => {
 		vscode.window.showErrorMessage(`File ${newFileToOpen} does not exists.`);
 	});
@@ -47,10 +61,23 @@ async function toggleCssFile() {
 		const currentFile = editor.document.fileName;
 		const newFileToOpen = currentFile.replace(/\.(ts|html|scss|sass|less|css|styl)$/, `.${extension}`);
 
+		if(currentFile === newFileToOpen) {
+			return;
+		}
+
+		const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+		const existingTabInActiveGroup = activeTabGroup.tabs.find(x => (x.input as vscode.TabInputText).uri.path === newFileToOpen);
+		if(existingTabInActiveGroup) {
+			const tabInput = existingTabInActiveGroup.input as vscode.TabInputText;
+			vscode.window.showTextDocument(tabInput.uri);
+			return;
+		}
+
 		try {
 			await vscode.workspace.fs.stat(vscode.Uri.file(newFileToOpen));
             const doc = await vscode.workspace.openTextDocument(newFileToOpen);
-            await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+			const column = editor.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
+            await vscode.window.showTextDocument(doc, column);
             isFileFound = true;
             break;
 			
