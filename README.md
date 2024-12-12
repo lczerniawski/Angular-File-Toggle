@@ -1,4 +1,6 @@
-<img src="images/icon.png" alt="Angular File Toggle Icon" width="500" height="500">
+<div align="center">
+  <img src="images/icon.png" alt="Angular File Toggle Icon" width="250" height="250">
+</div>
 
 # Angular File Toggle
 
