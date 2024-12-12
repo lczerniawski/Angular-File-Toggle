@@ -1,4 +1,4 @@
-![Angular File Toggle Icon](images/icon.png)
+<img src="images/icon.png" alt="Angular File Toggle Icon" width="500" height="500">
 
 # Angular File Toggle
 
