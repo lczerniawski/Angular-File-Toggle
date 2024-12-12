@@ -2,7 +2,28 @@
   "name": "angular-file-toggle",
   "displayName": "Angular File Toggle",
   "description": "Toggle between Angular component files (ts, html, css/scss) using shortcuts.",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "publisher": "lczerniawski",
+  "author": {
+    "name": "Łukasz Czerniawski",
+    "email": "lczerniawski@icloud.com",
+    "url": "https://lczerniawski.github.io/"
+  },
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#051421",
+    "theme": "dark"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "homepage": "https://github.com/lczerniawski/Angular-File-Toggle/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/lczerniawski/Angular-File-Toggle/issues",
+    "email": "l.czerniawski@icloud.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lczerniawski/Angular-File-Toggle"
+  },
   "engines": {
     "vscode": "^1.95.0"
   },
