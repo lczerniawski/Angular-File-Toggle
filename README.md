@@ -1,3 +1,5 @@
+![Angular File Toggle Icon](images/icon.png)
+
 # Angular File Toggle
 
 The Angular File Toggle extension for Visual Studio Code allows you to quickly switch between different file types (TypeScript, HTML, CSS) in Angular projects.

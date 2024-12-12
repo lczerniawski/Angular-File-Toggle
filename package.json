@@ -2,7 +2,7 @@
   "name": "angular-file-toggle",
   "displayName": "Angular File Toggle",
   "description": "Toggle between Angular component files (ts, html, css/scss) using shortcuts.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "lczerniawski",
   "author": {
     "name": "Łukasz Czerniawski",

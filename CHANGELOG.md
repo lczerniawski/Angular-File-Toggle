@@ -1,9 +1,7 @@
 # Change Log
 
-All notable changes to the "angular-file-toggle" extension will be documented in this file.
+## [1.0.1] - 2024-12-12
+- Add missing changelog
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
+## [1.0.0] - 2024-12-12
 - Initial release
