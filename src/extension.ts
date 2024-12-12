@@ -38,7 +38,7 @@ async function toggleFile(targetExtension: string) {
 	try {
 		await openFileInSplitScreen(editor, newFileToOpen);
 	} catch {
-		vscode.window.showErrorMessage(`File ${newFileToOpen} does not exists.`);
+        vscode.window.showErrorMessage(`The file ${newFileToOpen} does not exist.`);	
 	}
 };
 
@@ -70,7 +70,7 @@ async function toggleCssFile() {
 
 	if(!isFileFound)
 	{
-		vscode.window.showErrorMessage(`None of the CSS files with extensions ${possibleCssExtensions.join(', ')} exist for selected component.`);	
+        vscode.window.showErrorMessage(`The file ${editor.document.fileName.replace(/\.(ts|html|scss|sass|less|css|styl)$/, '')} with one of the extensions ${possibleCssExtensions.join(', ')} does not exist.`);	
 	}
 };
 
