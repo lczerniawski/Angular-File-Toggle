@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.2] - 2025-03-04
+- Fix vulnerable packages
+
 ## [1.0.1] - 2024-12-12
 - Add missing changelog
 
